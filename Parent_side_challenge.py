@@ -21,7 +21,6 @@ def hashing(string):
 	Hachage d'une chaîne de caractères fournie en paramètre.
 	Le résultat est une chaîne de caractères.
 	Attention : cette technique de hachage n'est pas suffisante (hachage dit cryptographique) pour une utilisation en dehors du cours.
-
 	:param (str) string: la chaîne de caractères à hacher
 	:return (str): le résultat du hachage
 	"""
@@ -90,7 +89,9 @@ def send_packet(key, type, content):
            (str) content:   Données à envoyer
 	:return none
     """
-
+    packet = f"{type}|{len(content)}|{content}"
+    encrypted_packet = vigenere(packet, key)
+    radio.send(encrypted_packet)
 #Unpack the packet, check the validity and return the type, length and content
 def unpack_data(encrypted_packet, key):
     """
@@ -103,20 +104,27 @@ def unpack_data(encrypted_packet, key):
             (int)length:           Longueur de la donnée en caractères
             (str) message:         Données reçue
     """
+    try:
+        type = str(type)
+        message = decrypted_packet.split('|')
+        decrypted_packet = vigenere(encrypted_packet,key,decryption=True)
+        type, length, message
+        length = int(length)
+    except:
 
 def receive_packet(packet_received, key):
     """
-    Traite les paquets reçus via l'interface radio du micro:bit
-    Cette fonction utilise la fonction unpack_data pour renvoyer les différents champs du message passé en paramètre
-    Si une erreur survient, les 3 champs sont retournés vides
+        Traite les paquets reçus via l'interface radio du micro:bit
+        Cette fonction utilise la fonction unpack_data pour renvoyer les différents champs du message passé en paramètre
+        Si une erreur survient, les 3 champs sont retournés vides
 
-    :param (str) packet_received: Paquet reçue
-           (str) key:              Clé de chiffrement
-	:return (srt)type:             Type de paquet
-            (int)lenght:           Longueur de la donnée en caractère
-            (str) message:         Données reçue
+        :param (str) packet_received: Paquet reçue
+            (str) key:              Clé de chiffrement
+        :return (srt)type:             Type de paquet
+                (int)lenght:           Longueur de la donnée en caractère
+                (str) message:         Données reçue
     """
-
+    if receive_packet(packet_received):
 #Calculate the challenge response
 def calculate_challenge_response(challenge):
     """
