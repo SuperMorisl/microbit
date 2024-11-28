@@ -106,10 +106,11 @@ def unpack_data(encrypted_packet, key):
     """
     try:
         type = str(type)
-        message = decrypted_packet.split('|')
-        decrypted_packet = vigenere(encrypted_packet,key,decryption=True)
-        type, length, message
         length = int(length)
+        decrypted_packet = vigenere(encrypted_packet,key,decryption=True)
+        message = decrypted_packet.split('|')
+        return message
+        
     except:
 
 def receive_packet(packet_received, key):
@@ -117,14 +118,18 @@ def receive_packet(packet_received, key):
         Traite les paquets reçus via l'interface radio du micro:bit
         Cette fonction utilise la fonction unpack_data pour renvoyer les différents champs du message passé en paramètre
         Si une erreur survient, les 3 champs sont retournés vides
-
         :param (str) packet_received: Paquet reçue
             (str) key:              Clé de chiffrement
         :return (srt)type:             Type de paquet
                 (int)lenght:           Longueur de la donnée en caractère
                 (str) message:         Données reçue
     """
-    if receive_packet(packet_received):
+    packet_received = 
+    try:    
+        if receive_packet(packet_received):
+            for i in decrypted_packet()
+    except ValueError:
+        return f""
 #Calculate the challenge response
 def calculate_challenge_response(challenge):
     """
