@@ -124,7 +124,7 @@ def receive_packet(packet_received, key):
                 (int)lenght:           Longueur de la donnée en caractère
                 (str) message:         Données reçue
     """
-    packet_received = unpack_data(message.received, key)  
+    packet_received = unpack_data(message.received(), key)  
     try:    
         if receive_packet(packet_received, key):
             for i in packet_received :
