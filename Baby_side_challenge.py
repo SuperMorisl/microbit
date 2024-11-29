@@ -82,7 +82,9 @@ def send_packet(key, type, content):
            (str) content:   Données à envoyer
 	:return none
     """
-
+    packet = f"{type}|{len(content)}|{content}"
+    encrypted_packet = vigenere(packet, key)
+    radio.send(encrypted_packet)
 #Decrypt and unpack the packet received and return the fields value
 def unpack_data(encrypted_packet, key):
     """
@@ -95,7 +97,14 @@ def unpack_data(encrypted_packet, key):
             (int)lenght:           Longueur de la donnée en caractères
             (str) message:         Données reçues
     """
-
+    try:
+        type = str(type)
+        length = int(length)
+        decrypted_packet = vigenere(encrypted_packet,key,decryption=True)
+        message = decrypted_packet.split('|')
+        return message
+        
+    except:
 
 #Unpack the packet, check the validity and return the type, length and content
 def receive_packet(packet_received, key):
