@@ -6,8 +6,10 @@ import music
 #Can be used to filter the communication, only the ones with the same parameters will receive messages
 #radio.config(group=23, channel=2, address=0x11111111)
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
-
-
+radio.on()
+radio.config(group = 3)
+def generate_key(seed):
+    return hashing(seed)
 
 def hashing(string):
 	"""

@@ -7,8 +7,12 @@ import music
 #radio.config(group=23, channel=2, address=0x11111111)
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
 
+def generate_key(seed):
+    return hashing(seed)
+
 #Initialisation des variables du micro:bit
 radio.on()
+radio.config(group=3)
 connexion_established = False
 key = "KEYWORD"
 connexion_key = None
@@ -89,9 +93,9 @@ def send_packet(key, type, content):
            (str) content:   Données à envoyer
 	:return none
     """
-    packet = f"{type}|{len(content)}|{content}"
-    encrypted_packet = vigenere(packet, key)
-    radio.send(encrypted_packet)
+    packet = f"{type}|{len(content)}|{content}"             #le packet est initialisé sous format T|L|V
+    encrypted_packet = vigenere(packet, key)               #on chiffre le packet 
+    radio.send(str(encrypted_packet))                     #le packet chiffré est envoyé 
 #Unpack the packet, check the validity and return the type, length and content
 def unpack_data(encrypted_packet, key):
     """
@@ -104,15 +108,13 @@ def unpack_data(encrypted_packet, key):
             (int)length:           Longueur de la donnée en caractères
             (str) message:         Données reçue
     """
-    try:
-        type = str(type)
-        length = int(length)
-        decrypted_packet = vigenere(encrypted_packet,key,decryption=True)
-        message = decrypted_packet.split('|')
-        return message
-        
-    except:
-
+    decrypted_packet = vigenere(encrypted_packet, key)                   #decrypter le message recu
+    decrypted_packet.split("|")                                  #on sépare et remet au format T|L|V
+    for type, length, message in decrypted_packet:            #on crée une boucle pour pouvoir ensuite renvoyer les éléments du decrypted_packet
+        return f"type: {type}"
+        return f"length: {int(length)}"
+        return f"message: {message}"
+    
 def receive_packet(packet_received, key):
     """
         Traite les paquets reçus via l'interface radio du micro:bit
@@ -124,13 +126,13 @@ def receive_packet(packet_received, key):
                 (int)lenght:           Longueur de la donnée en caractère
                 (str) message:         Données reçue
     """
-    packet_received = unpack_data(message.received(), key)  
+    packet_received = unpack_data(radio.received(), key)  
     try:    
-        if receive_packet(packet_received, key):
+        if packet_received:
             for i in packet_received :
-                return i
-    except ValueError:
-        return packet_received = f" | | "
+                return f"{i}|{i+1}|{i+2}"
+    except:
+        return " | | "
 #Calculate the challenge response
 def calculate_challenge_response(challenge):
     """
