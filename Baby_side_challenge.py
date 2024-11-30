@@ -9,7 +9,7 @@ import music
 radio.on()
 radio.config(group = 3)
 def generate_key(seed):
-    return hashing(seed)
+    key = hashing(seed)
 
 def hashing(string):
 	"""

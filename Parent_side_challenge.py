@@ -7,8 +7,8 @@ import music
 #radio.config(group=23, channel=2, address=0x11111111)
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
 
-def generate_key(seed):
-    return hashing(seed)
+def generate_key(seed):                  
+    key = hashing(seed)                   #grace au hashing on génére une key différente a partir d'une seed identique aux 2 microbit 
 
 #Initialisation des variables du micro:bit
 radio.on()
