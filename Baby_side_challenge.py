@@ -9,8 +9,8 @@ import music
 radio.on()
 radio.config(group = 3)
 def generate_key(seed):
-    key = hashing(seed)
-
+    return hashing(seed)
+key = generate_key(13)
 def hashing(string):
 	"""
 	Hachage d'une chaîne de caractères fournie en paramètre.
