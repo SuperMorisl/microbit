@@ -8,13 +8,29 @@ import music
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
 
 def generate_key(seed):                  
-    key = hashing(seed)                   #grace au hashing on génére une key différente a partir d'une seed identique aux 2 microbit 
+    return hashing(seed)                   #grace au hashing on génére une key différente a partir d'une seed identique aux 2 microbit 
+
+"""
+Type des messages
+
+0 = challenge
+1 = lait
+2 = bruits 
+3 = température
+4 = light_level
+
+
+"""
+
+
+
+
 
 #Initialisation des variables du micro:bit
 radio.on()
 radio.config(group=3)
 connexion_established = False
-key = "KEYWORD"
+key = generate_key(13)
 connexion_key = None
 nonce_list = set()
 baby_state = 0
@@ -130,9 +146,11 @@ def receive_packet(packet_received, key):
     try:    
         if packet_received:
             for i in packet_received :
-                return f"{i}|{i+1}|{i+2}"
+                real_packet =  f"{i}|{i+1}|{i+2}"
+            return real_packet
     except:
         return " | | "
+
 #Calculate the challenge response
 def calculate_challenge_response(challenge):
     """
@@ -141,6 +159,10 @@ def calculate_challenge_response(challenge):
     :param (str) challenge:            Challenge reçu
 	:return (srt)challenge_response:   Réponse au challenge
     """
+    challenge = vigenere("tentative de connexion", key)         #décryptage du challenge recu 
+    if challenge == "connexion":
+         challenge_response = "réussie"
+    send_packet(key, 0, challenge_response)                   #reponse au challenge crypté 
 
 #Respond to a connexion request by sending the hash value of the number received
 def respond_to_connexion_request(key):
@@ -152,4 +174,51 @@ def respond_to_connexion_request(key):
 	:return (srt) challenge_response:   Réponse au challenge
     """
 
+    send_packet(key, 6, key )   #la clé de base est deja hachée donc on va juste l'envoyer ???
+    
+
+
+def menu():
+    lst = [compteur_de_lait, luminosité_auto, temperature, musique_bruits]
+    value = []
+    stop = False
+    for i in lst:
+        while not button_a.was_pressed():
+            display.scroll(i, delay=90, monospace=True)
+            if button_b.was_pressed():
+                value.clear()
+                value.append(i)
+                stop = True
+                break
+            elif button_a.is_pressed():
+                stop = True
+                break
+        
+    if value and value[0] == compteur_de_lait:
+        lait()
+    elif value and value[0] ==luminosité_auto: #PAS OPERATIONNEL
+        light_lvl_menu()
+    elif value and value[0] == temperature:
+        temp()
+    elif value and value[0] == musique_bruits:
+        musique_et_bruits()
+        
+
 def main():
+    if message.received():
+        packet_receive = receive_packet(message.receive(), key)        #déballe le message recu 
+        if packet_receive[1] == 0:                                    #vérifie à chque fois le type du message 
+                calculate_challenge_response(packet_receive[2])
+                respond_to_connexion_request(key)
+        elif packet_receive[1] == 1:
+             lait()
+        elif packet_receive[2] == 2:
+             musique_et_bruits()
+        elif packet_receive[3] == 3:
+             temp()
+    elif pin_logo.is_touched():
+        if out_of_range():
+            break
+        else:
+            menu()
+
