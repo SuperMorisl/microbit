@@ -22,7 +22,7 @@ Type des messages
 2 = bruits 
 3 = température
 4 = light_level
-
+5 = état d'éveil
 
 """
 
@@ -278,21 +278,27 @@ def ALERT_RECEIVED():
             elif message[2] == "Alerte: Température trop basse !":
                 display.show(flocons, delay=100)
                 music.play(music.POWER_UP)
+        if message[0] == 4:
+            while not button_a.was_pressed() or not button_b.was_pressed():
+                display.scroll("Appuyer sur A(active) ou B(desactive)", delay=90, monospace=True)
+                if button_a.was_pressed():
+                    display.scroll("Active", delay=90, monospace=True)
+                    light_lvl() 
+                    break
+                elif button_b.was_pressed():
+                    display.scroll("Desactive", delay=90, monospace=True)
+                    break
         
 
-
-
-
-
-def temp():
-    message = radio.receive()
-    if message == "Alerte: Température trop élevée !":
-        display.show(flamme, delay=100)
-        music.play(music.POWER_DOWN)
-    elif message == "Alerte: Température trop basse !":
-        display.show(flocons, delay=100)
-        music.play(music.POWER_UP)
-
+def light_lvl():
+    if display.read_light_level() < 255:
+        for y in range(5):
+            for x in range(5):
+                display.set_pixel(x,y,1)
+    else:
+        for y in range(5):
+            for x in range(5):
+                display.set_pixel(x,y,9)
 
 def main():
     if message.received():
