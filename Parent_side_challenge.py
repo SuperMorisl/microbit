@@ -30,6 +30,7 @@ Type des messages
 
 
 
+
 #Initialisation des variables du micro:bit
 radio.on()
 radio.config(group=3)
@@ -222,6 +223,19 @@ def respond_to_connexion_request(key):
     send_packet(key, 6, key )   #la clé de base est deja hachée donc on va juste l'envoyer ???
     
 
+def musique_et_bruits():
+    if button_a.was_pressed():
+        display.show(musiquemode)
+        sleep(100)
+        radio.send("musique")         
+    elif button_b.was_pressed():
+        display.show(Image.HEART_SMALL)
+        sleep(100)
+        radio.send("bruits")
+    elif button_a.is_pressed():
+        display.show("X")
+        radio.send("rien")
+        break
 
 def menu():
     lst = [compteur_de_lait, luminosité_auto, temperature, musique_bruits]
@@ -290,6 +304,17 @@ def ALERT_RECEIVED():
                 elif button_b.was_pressed():
                     display.scroll("Desactive", delay=90, monospace=True)
                     break
+        if message[0] == 5:
+            if message == 'endormi':
+                display.show(Image.ASLEEP)  
+            elif message == 'agité':
+                display.show(Image.MEH)  
+            elif message == 'très agité':
+                music.play(music.POWER_DOWN)
+                display.show(Image.NO)
+                if button_b.was_pressed:
+                    musique_bruits
+            sleep(200)
         
 
 def light_lvl():
