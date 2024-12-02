@@ -268,6 +268,30 @@ def compteur_de_lait():
         display.show(str(milk_doses))
         sleep(500)
 
+def ALERT_RECEIVED():
+    if radio.received():
+        message = receive_packet(radio.received())
+        if message[0] == 3:
+            if message[2] == "Alerte: Température trop élevée !":
+                display.show(flamme, delay=100)
+                music.play(music.POWER_DOWN)
+            elif message[2] == "Alerte: Température trop basse !":
+                display.show(flocons, delay=100)
+                music.play(music.POWER_UP)
+        
+
+
+
+
+
+def temp():
+    message = radio.receive()
+    if message == "Alerte: Température trop élevée !":
+        display.show(flamme, delay=100)
+        music.play(music.POWER_DOWN)
+    elif message == "Alerte: Température trop basse !":
+        display.show(flocons, delay=100)
+        music.play(music.POWER_UP)
 
 
 def main():
