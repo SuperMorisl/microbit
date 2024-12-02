@@ -267,7 +267,9 @@ def compteur_de_lait():
             milk_doses _= 1
         display.show(str(milk_doses))
         sleep(500)
-
+    elif pin_logo.is_touched():
+        continue
+    
 def ALERT_RECEIVED():
     if radio.received():
         message = receive_packet(radio.received())
