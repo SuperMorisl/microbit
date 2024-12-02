@@ -235,7 +235,7 @@ def musique_et_bruits():
     elif button_a.is_pressed():
         display.show("X")
         radio.send("rien")
-        break
+        
 
 def menu():
     lst = [compteur_de_lait, luminosité_auto, temperature, musique_bruits]
@@ -274,11 +274,10 @@ def compteur_de_lait():
         display.show(str(milk_doses))
         sleep(500)
     elif pin2.is_touched:
-        if milk_doses > 0:
-            milk_doses += 2
+        milk_doses += 2
     elif boutton_a.is_touched():
         if milk_doses > 0:
-            milk_doses _= 1
+            milk_doses -= 1
         display.show(str(milk_doses))
         sleep(500)
     elif pin_logo.is_touched():
