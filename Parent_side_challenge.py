@@ -7,6 +7,10 @@ import music
 #radio.config(group=23, channel=2, address=0x11111111)
 #default : channel=7 (0-83), address = 0x75626974, group = 0 (0-255)
 
+pin0.set_touch_mode(pin0.CAPACITIVE)     #activation des 3 pin en tant que touche
+pin1.set_touch_mode(pin1.CAPACITIVE)
+pin2.set_touch_mode(pin2.CAPACITIVE)
+
 def generate_key(seed):                  
     return hashing(seed)                   #grace au hashing on génére une key différente a partir d'une seed identique aux 2 microbit 
 
@@ -35,6 +39,47 @@ connexion_key = None
 nonce_list = set()
 baby_state = 0
 set_volume(100)
+
+flamme = Image("00000:"
+               "00500:"
+               "05550:"
+               "55555:"
+               "05550")
+flocons = Image("50505:"
+                "05550:"
+                "55055:"
+                "05550:"
+                "50505")
+compteur_de_lait = Image("00500:"
+                         "50005:"
+                         "50005:"
+                         "50005:"
+                         "55555:")
+luminosité_auto = Image("00500:"
+                        "05550:"
+                        "55555:"
+                        "05550:"
+                        "00500:")
+temperature = Image("00500:"
+                    "05555:"
+                    "00500:"
+                    "00500:"
+                    "00055:")
+hors_de_portée = Image("00500:"
+                       "00500:"
+                       "00500:"
+                       "00000:"
+                       "00500:")
+musique_bruits = Image("05555:"
+                       "05005:"
+                       "05005:"
+                       "55055:"
+                       "55055:")
+musiquemode = Image("00500:"
+                    "00500:"
+                    "00500:"
+                    "05500:"
+                    "05500:")
 
 def hashing(string):
 	"""
@@ -202,7 +247,28 @@ def menu():
         temp()
     elif value and value[0] == musique_bruits:
         musique_et_bruits()
-        
+
+
+def compteur_de_lait():
+    milk_doses = 0
+    if pin0.is_touched():
+        milk_doses = 0  
+        display.show("0") 
+        sleep(500) 
+    elif pin1.is_touched():
+        milk_doses += 1 
+        display.show(str(milk_doses))
+        sleep(500)
+    elif pin2.is_touched:
+        if milk_doses > 0:
+            milk_doses += 2
+    elif boutton_a.is_touched():
+        if milk_doses > 0:
+            milk_doses _= 1
+        display.show(str(milk_doses))
+        sleep(500)
+
+
 
 def main():
     if message.received():
