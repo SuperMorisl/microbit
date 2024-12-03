@@ -121,6 +121,14 @@ def receive_packet(packet_received, key):
             (int)lenght:           Longueur de la donnée en caractère
             (str) message:         Données reçue
     """
+    packet_received = unpack_data(radio.received(), key)  
+    try:    
+        if packet_received:
+            for i in packet_received :
+                real_packet =  f"{i}|{i+1}|{i+2}"
+            return real_packet
+    except:
+        return " | | "
     
 #Calculate the challenge response
 def calculate_challenge_response(challenge):
@@ -140,6 +148,56 @@ def establish_connexion(key):
     :param (str) key:                  Clé de chiffrement
 	:return (srt)challenge_response:   Réponse au challenge
     """
+def compteur_lait():
+    message = receive_packet(radio.received(), key)
+    display.show(message)
+
+def veilleuse():
+    while True:
+        if display.read_light_level() < 100:  
+            send_packet(key, 4, "luminosité_faible")  
+            
+def veilleuse_activé():
+    if receive_packet(radio.received(), key) == "activé":
+        display.show(Image("10101:01110:11111:01110:10101"))
+    else:
+        display.clear()
+     
+
+def instructions():
+     if radio.received():
+          message = receive_packet(radio.received(), key)
+          if message[0] == 4:
+               veilleuse_activé()     
+
+
+def menu():
+    lst = [compteur_de_lait, veilleuse, temperature, musique_bruits]
+    value = []
+    stop = False
+    for image in lst:
+        while not button_a.was_pressed():
+            display.show(image)
+            sleep(500)
+            if button_b.was_pressed():
+                value.clear()
+                value.append(image)
+                stop = True
+                break
+            elif button_a.is_pressed():
+                stop = True
+                break
+        
+    if value and value[0] == compteur_de_lait:
+        lait()
+    elif value and value[0] ==luminosite_auto: #PAS OPERATIONNEL
+        light_lvl_menu()
+    elif value and value[0] == temperature:
+        temp()
+    elif value and value[0] == musique_bruits:
+        musique_et_bruits()
 
 def main():
+    
+    while not 
     return True

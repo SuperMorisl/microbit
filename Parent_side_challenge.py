@@ -21,7 +21,7 @@ Type des messages
 1 = lait
 2 = bruits 
 3 = température
-4 = light_level
+4 = veilleuse
 5 = état d'éveil
 
 """
@@ -51,16 +51,17 @@ flocons = Image("50505:"
                 "55055:"
                 "05550:"
                 "50505")
+
 compteur_de_lait = Image("00500:"
-                         "50005:"
+                         "55055:"
                          "50005:"
                          "50005:"
                          "55555:")
-luminosité_auto = Image("00500:"
-                        "05550:"
-                        "55555:"
-                        "05550:"
-                        "00500:")
+veilleuse = Image("00500:"
+                  "05550:"
+                  "55555:"
+                  "05550:"
+                  "00500:")
 temperature = Image("00500:"
                     "05555:"
                     "00500:"
@@ -220,7 +221,7 @@ def respond_to_connexion_request(key):
 	:return (srt) challenge_response:   Réponse au challenge
     """
 
-    send_packet(key, 6, key )   #la clé de base est deja hachée donc on va juste l'envoyer ???
+    send_packet(key, 0, key )   #la clé de base est deja hachée donc on va juste l'envoyer ???
     
 
 def musique_et_bruits():
@@ -232,31 +233,31 @@ def musique_et_bruits():
         display.show(Image.HEART_SMALL)
         sleep(100)
         radio.send("bruits")
-    elif button_a.is_pressed():
+    elif pin_logo.is_touched():
         display.show("X")
-        radio.send("rien")
+        sleep(200)
+        menu()
         
 
 def menu():
-    lst = [compteur_de_lait, luminosite_auto, temperature, musique_bruits]
+    lst = [compteur_de_lait, veilleuse, temperature, musique_bruits]
     value = []
     stop = False
     for image in lst:
-        while not button_a.was_pressed():
             display.show(image)
-            sleep(500)
-            if button_b.was_pressed():
+            sleep(2000)
+            if button_a.was_pressed():
                 value.clear()
                 value.append(image)
                 stop = True
                 break
-            elif button_a.is_pressed():
+            elif button_b.is_pressed():
                 stop = True
                 break
         
     if value and value[0] == compteur_de_lait:
         lait()
-    elif value and value[0] ==luminosité_auto: #PAS OPERATIONNEL
+    elif value and value[0] ==luminosite_auto: #PAS OPERATIONNEL
         light_lvl_menu()
     elif value and value[0] == temperature:
         temp()
@@ -266,8 +267,8 @@ def menu():
 
 def compteur_de_lait():
     doses = 0
+    send_packet(key, 1, doses)
     while True:
-        milk_doses = 0
         if pin0.is_touched():
             doses = 0  
             display.show(str(doses)) 
@@ -286,7 +287,7 @@ def compteur_de_lait():
             display.show(str(doses))
             sleep(500)
         if pin_logo.is_touched():
-            return
+            menu()
     
 def ALERT_RECEIVED():
     if radio.received():
@@ -309,33 +310,26 @@ def ALERT_RECEIVED():
                     display.scroll("Desactive", delay=90, monospace=True)
                     break
         if message[0] == 5:
-            if message == 'endormi':
+            if message[2] == 'endormi':
                 display.show(Image.ASLEEP)  
-            elif message == 'agité':
+            elif message[2] == 'agité':
                 display.show(Image.MEH)  
-            elif message == 'très agité':
+            elif message[2] == 'très agité':
                 music.play(music.POWER_DOWN)
                 display.show(Image.NO)
-                if button_b.was_pressed:
+                if button_b.was_pressed():
                     musique_bruits
             sleep(200)
         
 
-def light_lvl():
-    if display.read_light_level() < 255:
-        for y in range(5):
-            for x in range(5):
-                display.set_pixel(x,y,1)
-    else:
-        for y in range(5):
-            for x in range(5):
-                display.set_pixel(x,y,9)
+def veilleusee():
+    
 
 def main():
-    ALERT_RECEIVED()
-    if pin_logo.is_touched():
-        if out_of_range():
-            break
-        else:
-            menu()
+    while not ALERT_RECEIVED():
+        if pin_logo.is_touched():
+            if out_of_range():
+                break
+            else:
+                menu()
 
