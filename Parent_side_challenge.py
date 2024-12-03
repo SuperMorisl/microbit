@@ -238,15 +238,16 @@ def musique_et_bruits():
         
 
 def menu():
-    lst = [compteur_de_lait, luminosité_auto, temperature, musique_bruits]
+    lst = [compteur_de_lait, luminosite_auto, temperature, musique_bruits]
     value = []
     stop = False
-    for i in lst:
+    for image in lst:
         while not button_a.was_pressed():
-            display.scroll(i, delay=90, monospace=True)
+            display.show(image)
+            sleep(500)
             if button_b.was_pressed():
                 value.clear()
-                value.append(i)
+                value.append(image)
                 stop = True
                 break
             elif button_a.is_pressed():
@@ -264,28 +265,32 @@ def menu():
 
 
 def compteur_de_lait():
-    milk_doses = 0
-    if pin0.is_touched():
-        milk_doses = 0  
-        display.show("0") 
-        sleep(500) 
-    elif pin1.is_touched():
-        milk_doses += 1 
-        display.show(str(milk_doses))
-        sleep(500)
-    elif pin2.is_touched:
-        milk_doses += 2
-    elif boutton_a.is_touched():
-        if milk_doses > 0:
-            milk_doses -= 1
-        display.show(str(milk_doses))
-        sleep(500)
-    elif pin_logo.is_touched():
-        continue
+    doses = 0
+    while True:
+        milk_doses = 0
+        if pin0.is_touched():
+            doses = 0  
+            display.show(str(doses)) 
+            sleep(500) 
+        if pin1.is_touched():
+            doses += 1 
+            display.show(str(doses))
+            sleep(500)
+        if pin2.is_touched():
+            doses += 2
+            display.show(str(doses))
+            sleep(500)
+        if button_a.was_pressed():
+            if doses > 0:
+                doses -= 1
+            display.show(str(doses))
+            sleep(500)
+        if pin_logo.is_touched():
+            return
     
 def ALERT_RECEIVED():
     if radio.received():
-        message = receive_packet(radio.received())
+        message = receive_packet(radio.received(), key)
         if message[0] == 3:
             if message[2] == "Alerte: Température trop élevée !":
                 display.show(flamme, delay=100)
@@ -327,18 +332,8 @@ def light_lvl():
                 display.set_pixel(x,y,9)
 
 def main():
-    if message.received():
-        packet_receive = receive_packet(message.receive(), key)        #déballe le message recu 
-        if packet_receive[1] == 0:                                    #vérifie à chque fois le type du message 
-                calculate_challenge_response(packet_receive[2])
-                respond_to_connexion_request(key)
-        elif packet_receive[1] == 1:
-             lait()
-        elif packet_receive[2] == 2:
-             musique_et_bruits()
-        elif packet_receive[3] == 3:
-             temp()
-    elif pin_logo.is_touched():
+    ALERT_RECEIVED()
+    if pin_logo.is_touched():
         if out_of_range():
             break
         else:
