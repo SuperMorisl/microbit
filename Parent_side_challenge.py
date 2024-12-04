@@ -296,8 +296,8 @@ def temp():
         display.show(flocons, delay=100)
         music.play(music.POWER_UP)    
 def ALERT_RECEIVED():
-    if radio.received():
-        message = receive_packet(radio.received(), key)
+    if radio.receive():
+        message = receive_packet(radio.receive(), key)
         if message[0] == 3:
             temp()
         if message[0] == 4:
