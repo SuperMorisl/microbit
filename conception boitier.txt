@@ -23,7 +23,7 @@ compteur de lait = ok (?)
 
 ce qu'il faut faire (fichier bb):
 
-musique(entiérement)
+musique(implémenter les musiques et les bruits de fond)
 agitation(ajouter)
 instructions (à finir)
 menu(à terminer)

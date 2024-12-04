@@ -189,9 +189,30 @@ def establish_connexion(key):
     :param (str) key:                  Clé de chiffrement
 	:return (srt)challenge_response:   Réponse au challenge
     """
+
+def musique_et_bruits_menu():
+    while True: 
+        if button_a.is_pressed():
+            if pin0.is_touched():
+                rick_roll()
+            if pin1.is_touched():
+                classical()
+        if button_b.is_pressed():
+            bruits_de_fonds()
+
+
+def musique_et_bruits_alerte():
+    while True: 
+        message = receive_packet(radio.receive(),key )
+        if message[2] == "rick_roll" :
+            rick_roll()
+        if message[2] == "classical" :    
+            classical()
+        if message[2] == "bruits" :
+            bruits_de_fonds()
 def compteur_lait():
-    message = receive_packet(radio.received(), key)
-    display.show(message)
+    message = receive_packet(radio.receive(), key)
+    display.show(message[2])
 
 def veilleusee():
     while True:
@@ -199,23 +220,36 @@ def veilleusee():
             send_packet(key, 4, "luminosité_faible")  
             
 def veilleuse_activé():
-    if receive_packet(radio.received(), key) == "activé":
+    if receive_packet(radio.receive(), key) == "activé":
         display.show(Image("10101:01110:11111:01110:10101"))
     else:
         display.clear()
-     
-
-def instructions():
-     if radio.received():
-          message = receive_packet(radio.received(), key)
-          if message[0] == 4:
-               veilleuse_activé()     
+        
 
 def veilleuse_activation():
     if button_a.was_pressed():
         display.show(Image("10101:01110:11111:01110:10101"))
     if pin_logo.is_touched():
         main()
+
+def instructions():
+     if radio.receive():
+          message = receive_packet(radio.receive(), key)
+          if message[0] == 4:
+               veilleuse_activé()  
+
+def temp():
+    while True:
+        room_temp = temperature() - 4
+        display.show(room_temp)
+        if room_temp >= 25:
+            send_packet(key, 3, "Alerte: Température trop élevée !")
+        elif room_temp <= 20:
+            send_packet(key, 3, "Alerte: Température trop basse !")
+        else:
+            display.clear()
+    
+    sleep(600000)
 
 def menu():
     lst = [compteur_de_lait, veilleuse, temperature, musique_bruits]
@@ -243,23 +277,10 @@ def menu():
     elif value and value[0] == musique_bruits:
         musique_et_bruits()
 
-def temp():
-    while True:
-        room_temp = temperature() - 4
-        display.show(room_temp)
-        if room_temp >= 25:
-            send_packet(key, 3, "Alerte: Température trop élevée !")
-        elif room_temp <= 20:
-            send_packet(key, 3, "Alerte: Température trop basse !")
-        else:
-            display.clear()
-    
-    sleep(600000)
-
 def main():
     while True:
         veilleusee()
-        if radio.received():
+        if radio.receive():
             instructions()
-        else:
+        if pin_logo.is_touched():
             menu()
