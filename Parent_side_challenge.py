@@ -228,15 +228,15 @@ def musique_et_bruits():
     if button_a.was_pressed():
         display.show(musiquemode)
         sleep(100)
-        radio.send("musique")         
+        send_packet(key, 2, "musique")         
     elif button_b.was_pressed():
         display.show(Image.HEART_SMALL)
         sleep(100)
-        radio.send("bruits")
+        send_packet(key, 2, "bruits")
     elif pin_logo.is_touched():
         display.show("X")
         sleep(200)
-        menu()
+        main()
         
 
 def menu():
@@ -256,16 +256,16 @@ def menu():
                 break
         
     if value and value[0] == compteur_de_lait:
-        lait()
-    elif value and value[0] ==luminosite_auto: #PAS OPERATIONNEL
-        light_lvl_menu()
+        compteur_de_lait_menu()
+    elif value and value[0] ==veilleuse: #PAS OPERATIONNEL
+        veilleuse_menu()
     elif value and value[0] == temperature:
         temp()
     elif value and value[0] == musique_bruits:
         musique_et_bruits()
 
 
-def compteur_de_lait():
+def compteur_de_lait_menu():
     doses = 0
     send_packet(key, 1, doses)
     while True:
@@ -288,41 +288,49 @@ def compteur_de_lait():
             sleep(500)
         if pin_logo.is_touched():
             menu()
-    
+def temp():
+    if message[2] == "Alerte: Température trop élevée !":
+        display.show(flamme, delay=100)
+        music.play(music.POWER_DOWN)
+    elif message[2] == "Alerte: Température trop basse !":
+        display.show(flocons, delay=100)
+        music.play(music.POWER_UP)    
 def ALERT_RECEIVED():
     if radio.received():
         message = receive_packet(radio.received(), key)
         if message[0] == 3:
-            if message[2] == "Alerte: Température trop élevée !":
-                display.show(flamme, delay=100)
-                music.play(music.POWER_DOWN)
-            elif message[2] == "Alerte: Température trop basse !":
-                display.show(flocons, delay=100)
-                music.play(music.POWER_UP)
+            temp()
         if message[0] == 4:
-            while not button_a.was_pressed() or not button_b.was_pressed():
-                display.scroll("Appuyer sur A(active) ou B(desactive)", delay=90, monospace=True)
-                if button_a.was_pressed():
-                    display.scroll("Active", delay=90, monospace=True)
-                    light_lvl() 
-                    break
-                elif button_b.was_pressed():
-                    display.scroll("Desactive", delay=90, monospace=True)
-                    break
+            veilleusee()
         if message[0] == 5:
-            if message[2] == 'endormi':
-                display.show(Image.ASLEEP)  
-            elif message[2] == 'agité':
-                display.show(Image.MEH)  
-            elif message[2] == 'très agité':
-                music.play(music.POWER_DOWN)
-                display.show(Image.NO)
-                if button_b.was_pressed():
-                    musique_bruits
-            sleep(200)
+            agitation()
         
-
+def agitation():
+    if message[2] == 'endormi':
+        display.show(Image.ASLEEP)  
+    elif message[2] == 'agité':
+        display.show(Image.MEH)  
+    elif message[2] == 'très agité':
+        music.play(music.POWER_DOWN)
+        display.show(Image.NO)
+        if button_a.was_pressed():
+            musique_bruits
+    sleep(200)   
 def veilleusee():
+    if message[2 == "luminosité_faible"]
+        display.scroll("low")
+        if button_a.is_pressed():
+            send_packet(key, 4,"activé" )
+        if pin_logo.is_touched():
+            main()
+        
+def veilleuse_menu():
+    if button_a.is_pressed():
+        send_packet(key, 4,"activé" )
+    if pin_logo.is_touched():
+            main()
+
+
     
 
 def main():
