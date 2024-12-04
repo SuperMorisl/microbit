@@ -47,6 +47,9 @@ musiquemode = Image("00500:"
                     "00500:"
                     "05500:"
                     "05500:")
+AGITATION_FAIBLE = 2000
+AGITATION_MODEREE = 3000
+AGITATION_FORTE = 4000
 radio.on()
 radio.config(group = 3)
 def generate_key(seed):
@@ -189,7 +192,24 @@ def establish_connexion(key):
     :param (str) key:                  Clé de chiffrement
 	:return (srt)challenge_response:   Réponse au challenge
     """
+def agitation():
 
+
+    while True:
+        x = accelerometer.get_x()
+        y = accelerometer.get_y()
+        z = accelerometer.get_z()
+
+        mouvement = abs(x) + abs(y) + abs(z)
+
+        if mouvement < AGITATION_FAIBLE:
+            send_packet(key, 5, 'endormi')
+        elif mouvement < AGITATION_MODEREE:
+            send_packet(key, 5, 'agité')
+        elif mouvement > AGITATION_FORTE:
+            send_packet(key, 5, 'très agité')
+
+    sleep(200)
 def musique_et_bruits_menu():
     while True: 
         if button_a.is_pressed():
