@@ -163,7 +163,44 @@ def menu():
 
 
 def select_option(value, key):
-    pass
+    if value == icons.milk:
+        milk_quantity = set_milk_quantity()
+    elif value == icons.light:
+        pass
+    elif value == icons.temperature:
+        pass
+    elif value == icons.sound:
+        pass
+    elif value == icons.state:
+        pass
+    return
+
+
+def set_milk_quantity():
+    global milk_quantity
+    display.show(str(milk_quantity))
+    sleep(500)
+    while True:
+        if pin0.is_touched():
+            milk_quantity = 0
+            display.show(str(milk_quantity))
+            sleep(500)
+        if pin1.is_touched():
+            milk_quantity += 1
+            display.show(str(milk_quantity))
+            sleep(500)
+        if pin2.is_touched():
+            milk_quantity += 2
+            display.show(str(milk_quantity))
+            sleep(500)
+        if button_a.was_pressed():
+            if milk_quantity > 0:
+                milk_quantity -= 1
+            display.show(str(milk_quantity))
+            sleep(500)
+        if pin_logo.is_touched():
+            break
+    return milk_quantity
 
 
 def main():
