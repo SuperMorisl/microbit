@@ -179,7 +179,7 @@ def select_option(value, key):
     elif value == icons.sound:
         play_sound()
     elif value == icons.state:
-        pass
+        get_state()
     return
 
 
@@ -245,6 +245,27 @@ def play_sound():
             send_packet(key=hashing("1"), message_type="0", message="play_noise")
             display.show("B")
             sleep(1000)
+        if pin_logo.is_touched():
+            break
+    return
+
+
+def get_state():
+    while True:
+        if button_a.was_pressed():
+            send_packet(key=hashing("1"), message_type="0", message="send_state")
+            sleep(1000)
+            message_type, message_length, message = receive_packet(radio.receive(), hashing("1"))
+            if message == "asleep":
+                display.show(Image.ASLEEP)
+                sleep(1000)
+            elif message == "agitated":
+                display.show(Image.MEH)
+                sleep(1000)
+            elif message == "very agitated":
+                music.play(music.POWER_DOWN)
+                display.show(Image.NO)
+                sleep(1000)
         if pin_logo.is_touched():
             break
     return
