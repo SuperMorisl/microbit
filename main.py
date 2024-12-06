@@ -175,7 +175,7 @@ def select_option(value, key):
     elif value == icons.light:
         handle_night_light()
     elif value == icons.temperature:
-        pass
+        get_temperature()
     elif value == icons.sound:
         pass
     elif value == icons.state:
@@ -224,6 +224,14 @@ def handle_night_light():
             sleep(1000)
         if pin_logo.is_touched():
             break
+    return
+
+
+def get_temperature():
+    send_packet(key=hashing("1"), message_type="0", message="send_temperature")
+    sleep(1000)
+    message_type, message_length, message = receive_packet(packet_received=radio.receive(), key=hashing("1"))
+    display.scroll(message)
     return
 
 
