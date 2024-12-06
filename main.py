@@ -9,6 +9,8 @@ pin0.set_touch_mode(pin0.CAPACITIVE)  # activation des 3 pin en tant que touche
 pin1.set_touch_mode(pin1.CAPACITIVE)
 pin2.set_touch_mode(pin2.CAPACITIVE)
 
+milk_quantity = 0
+
 
 def hashing(string):
     """
