@@ -173,7 +173,7 @@ def select_option(value, key):
         milk_quantity = set_milk_quantity()
         send_packet(key=key, message_type="1", message=str(milk_quantity))
     elif value == icons.light:
-        pass
+        handle_night_light()
     elif value == icons.temperature:
         pass
     elif value == icons.sound:
@@ -208,6 +208,23 @@ def set_milk_quantity():
         if pin_logo.is_touched():
             break
     return milk_quantity
+
+
+def handle_night_light():
+    while True:
+        if button_a.was_pressed():
+            message = "activate_light"
+            send_packet(key=hashing("1"), message_type="0", message=message)
+            display.show(Image.YES)
+            sleep(1000)
+        if button_b.was_pressed():
+            message = "deactivate_light"
+            send_packet(key=hashing("1"), message_type="0", message=message)
+            display.show(Image.NO)
+            sleep(1000)
+        if pin_logo.is_touched():
+            break
+    return
 
 
 def main():
