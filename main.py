@@ -177,7 +177,7 @@ def select_option(value, key):
     elif value == icons.temperature:
         get_temperature()
     elif value == icons.sound:
-        pass
+        play_sound()
     elif value == icons.state:
         pass
     return
@@ -232,6 +232,21 @@ def get_temperature():
     sleep(1000)
     message_type, message_length, message = receive_packet(packet_received=radio.receive(), key=hashing("1"))
     display.scroll(message)
+    return
+
+
+def play_sound():
+    while True:
+        if button_a.was_pressed():
+            send_packet(key=hashing("1"), message_type="0", message="play_music")
+            display.show("M")
+            sleep(1000)
+        if button_b.was_pressed():
+            send_packet(key=hashing("1"), message_type="0", message="play_noise")
+            display.show("B")
+            sleep(1000)
+        if pin_logo.is_touched():
+            break
     return
 
 
