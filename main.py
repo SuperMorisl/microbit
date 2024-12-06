@@ -76,7 +76,7 @@ def vigenere(message, key, decryption=False):
     return text
 
 
-def send_packet(key, type, content):
+def send_packet(key, message_type, message):
     """
     Envoi de données fournies en paramètres
     Cette fonction permet de construire, de chiffrer puis d'envoyer un paquet via l'interface radio du micro:bit
@@ -86,9 +86,12 @@ def send_packet(key, type, content):
            (str) content:   Données à envoyer
         :return none
     """
+    packet = "{}|{}|{}".format(message_type, str(len(message)), message)  # format T|L|V
+    encrypted_packet = vigenere(packet, key)
+    radio.send(encrypted_packet)
+    return encrypted_packet
 
 
-# Unpack the packet, check the validity and return the type, length and content
 def unpack_data(encrypted_packet, key):
     """
     Déballe et déchiffre les paquets reçus via l'interface radio du micro:bit
@@ -100,6 +103,7 @@ def unpack_data(encrypted_packet, key):
             (int)length:           Longueur de la donnée en caractères
             (str) message:         Données reçue
     """
+    return vigenere(encrypted_packet, key, decryption=True)
 
 
 def receive_packet(packet_received, key):
@@ -114,6 +118,8 @@ def receive_packet(packet_received, key):
             (int)lenght:           Longueur de la donnée en caractère
             (str) message:         Données reçue
     """
+    decrypted_packet = unpack_data(packet_received, key)
+    return decrypted_packet.split("|")
 
 
 # Calculate the challenge response
