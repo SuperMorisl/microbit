@@ -171,6 +171,7 @@ def menu():
 def select_option(value, key):
     if value == icons.milk:
         milk_quantity = set_milk_quantity()
+        send_packet(key=key, message_type="1", message=str(milk_quantity))
     elif value == icons.light:
         pass
     elif value == icons.temperature:
