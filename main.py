@@ -240,9 +240,24 @@ def get_temperature():
 def play_sound():
     while True:
         if button_a.was_pressed():
-            send_packet(key=hashing("1"), message_type="0", message="play_music")
             display.show("M")
-            sleep(1000)
+            while True:
+                sleep(100)
+                if pin0.is_touched():
+                    display.show("1")
+                    send_packet(key=hashing("1"), message_type="2", message="melody_1")
+                    sleep(1000)
+                if pin1.is_touched():
+                    display.show("2")
+                    send_packet(key=hashing("1"), message_type="2", message="melody_2")
+                    sleep(1000)
+                if pin2.is_touched():
+                    display.show("3")
+                    send_packet(key=hashing("1"), message_type="2", message="melody_3")
+                    sleep(1000)
+                if button_a.was_pressed():
+                    break
+
         if button_b.was_pressed():
             send_packet(key=hashing("1"), message_type="0", message="play_noise")
             display.show("B")
