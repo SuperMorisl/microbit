@@ -1,9 +1,11 @@
 import random
 
+
 import icons
 import music
 import radio
 from microbit import *
+
 
 milk_quantity = "0"
 listening_mode = 0
@@ -24,6 +26,7 @@ def hashing(string):
         Fonction interne utilisée par hashing.
         Convertit une valeur en un entier signé de 32 bits.
         Si 'value' est un entier plus grand que 2 ** 31, il sera tronqué.
+
 
         :param (int) value: valeur du caractère transformé par la valeur de hachage de cette itération
         :return (int): entier signé de 32 bits représentant 'value'
@@ -81,6 +84,7 @@ def send_packet(key, message_type, message):
     Envoi de données fournies en paramètres
     Cette fonction permet de construire, de chiffrer puis d'envoyer un paquet via l'interface radio du micro:bit
 
+
     :param (str) key:       Clé de chiffrement
            (str) type:      Type du paquet à envoyer
            (str) content:   Données à envoyer
@@ -95,6 +99,7 @@ def unpack_data(encrypted_packet, key):
     """
     Déballe et déchiffre les paquets reçus via l'interface radio du micro:bit
     Cette fonction renvoit les différents champs du message passé en paramètre
+
 
     :param (str) encrypted_packet: Paquet reçu
            (str) key:              Clé de chiffrement
@@ -111,6 +116,7 @@ def receive_packet(packet_received, key):
     Cette fonction utilise la fonction unpack_data pour renvoyer les différents champs du message passé en paramètre
     Si une erreur survient, les 3 champs sont retournés vides
 
+
     :param (str) packet_received: Paquet reçue
            (str) key:              Clé de chiffrement
         :return (srt)type:             Type de paquet
@@ -125,6 +131,11 @@ def send_temperature():
     room_temperature = str(temperature())
     send_packet(key=hashing("1"), message_type="0", message=room_temperature)
     display.scroll(room_temperature)
+
+
+def get_temperature():
+    room_temperature = str(temperature())
+    return room_temperature
 
 
 def send_continuous_temperature():
@@ -354,6 +365,25 @@ def send_state():
         send_packet(key=hashing("1"), message_type="0", message="very agitated")
 
 
+def get_state():
+    AGITATION_FAIBLE = 2000
+    AGITATION_MODEREE = 3000
+    AGITATION_FORTE = 4000
+
+    x = accelerometer.get_x()
+    y = accelerometer.get_y()
+    z = accelerometer.get_z()
+
+    mouvement = abs(x) + abs(y) + abs(z)
+
+    if mouvement <= AGITATION_FAIBLE:
+        return "asleep"
+    elif mouvement <= AGITATION_MODEREE:
+        return "agitated"
+    elif mouvement > AGITATION_FORTE:
+        return "very agitated"
+
+
 def set_milk_quantity(message):
     global milk_quantity
 
@@ -435,7 +465,6 @@ def menu():
     display.show("M")
     sleep(1000)
     images = [icons.milk, icons.light, icons.temperature, icons.sound, icons.state]
-    print(images)
     value = ""
     current_index = 0
 
@@ -472,13 +501,24 @@ def select_option(value):
         sleep(1000)
     elif value == icons.light:
         handle_night_light()
-    # elif value == icons.temperature:
-    #     get_temperature()
-    # elif value == icons.sound:
-    #     play_sound()
-    # elif value == icons.state:
-    #     get_state()
+    elif value == icons.temperature:
+        room_temperature = get_temperature()
+        display.scroll(room_temperature)
+    elif value == icons.sound:
+        play_sound()
     return
+
+
+def alert():
+    room_temperature = int(get_temperature())
+    baby_state = get_state()
+    if room_temperature < 29 or room_temperature >= 30:
+        return True
+
+    if baby_state == "very agitated":
+        return True
+
+    return False
 
 
 def listen():
@@ -489,6 +529,10 @@ def listen():
         if pin_logo.is_touched():
             sleep(1000)
             return menu_mode
+
+        if alert():
+            print("ALERT")
+            send_packet(key=hashing("1"), message_type="9", message="ALERT")
 
         packet = receive_packet(radio.receive(), hashing("1"))
         if len(packet) < 3:
