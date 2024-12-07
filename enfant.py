@@ -145,14 +145,18 @@ def deactivate_light():
 
 
 def play_noise():
-    speaker.on()
-    freq = random.randint(300, 600)
-    music.pitch(freq, 50)
+    # speaker.on()
+    # freq = random.randint(300, 600)
+    # music.pitch(freq, 50)
+    music.pitch(130, duration=100)
+    sleep(100)
+    music.pitch(85, duration=200)
+    sleep(800)
 
 
-def play_music():
+def play_music(melody):
     speaker.on()
-    melody = [
+    melody1 = [
         "C4:4",
         "D4:4",
         "E4:4",
@@ -174,7 +178,161 @@ def play_music():
         "E4:2",
         "D4:2",
     ]
-    music.play(melody)
+    melody2 = [
+        "A5:2",
+        "B5:2",
+        "C6:6",
+        "G5:2",
+        "G5:2",
+        "D6:4",
+        "R:4",
+        "C6:2",
+        "A5:2",
+        "A5:2",
+        "A5:4",
+        "A5:1",
+        "B5:2",
+        "C6:4",
+        "R:3",
+        "A5:2",
+        "B5:2",
+        "C6:4",
+        "R:2",
+        "A5:4",
+        "E6:2",
+        "D6:4",
+        "R:2",
+        "C6:2",
+        "D6:2",
+        "E6:2",
+        "E6:4",
+        "F6:4",
+        "D6:4",
+        "R:2",
+        "C6:2",
+        "R:2",
+        "G6:6",
+        "E6:6",
+        "D6:6",
+        "R:2",
+        "C6:3",
+        "C6:4",
+        "G6:6",
+        "E6:6",
+        "C6:6",
+        "R:4",
+        "C6:4",
+        "C6:4",
+        "B5:4",
+        "G5:6",
+        "G5:4",
+        "R:4",
+        "F5:2",
+        "F5:2",
+        "F5:2",
+        "E5:2",
+        "F5:2",
+        "E5:2",
+        "F5:2",
+        "F5:2",
+        "E5:4",
+        "C5:4",
+    ]
+    melody3 = [
+        "A#5:6",
+        "G6:6",
+        "R:2",
+        "F6:4",
+        "R:2",
+        "G6:4",
+        "F6:4",
+        "D#6:3",
+        "R:2",
+        "A#5:4",
+        "G6:4",
+        "C#6:1",
+        "C6:1",
+        "B5:1",
+        "C6:1",
+        "C7:6",
+        "G6:4",
+        "R:1",
+        "A#6:10",
+        "G#6:8",
+        "G6:2",
+        "R:1",
+        "F6:6",
+        "G6:6",
+        "D6:4",
+        "D#6:6",
+        "R:2",
+        "C6:6",
+        "A#5:6",
+        "R:2",
+        "D7:6",
+        "C7:4",
+        "R:1",
+        "A#6:2",
+        "G#6:2",
+        "G6:2",
+        "G#6:2",
+        "C6:2",
+        "D6:2",
+        "D#6:8",
+        "A#5:8",
+        "G6:8",
+        "F6:2",
+        "G6:2",
+        "F6:2",
+        "E6:2",
+        "F6:2",
+        "G6:2",
+        "F6:4",
+        "D#6:6",
+        "R:1",
+        "F6:2",
+        "D#6:2",
+        "D6:2",
+        "D#6:2",
+        "F6:2",
+        "F#6:2",
+        "B5:2",
+        "C6:2",
+        "C#6:2",
+        "C6:2",
+        "F6:2",
+        "E6:2",
+        "G#6:2",
+        "G6:2",
+        "C#7:2",
+        "C7:2",
+        "G6:4",
+        "A#6:6",
+        "G#6:6",
+        "G6:6",
+        "F6:6",
+        "G6:6",
+        "D6:6",
+        "D#6:6",
+        "C6:8",
+        "A#5:6",
+        "D7:2",
+        "C7:2",
+        "A#6:2",
+        "G#6:2",
+        "G6:2",
+        "G#6:2",
+        "C6:2",
+        "D6:2",
+        "D#6:6",
+    ]
+
+    melodies = {
+        "melody_1": melody1,
+        "melody_2": melody2,
+        "melody_3": melody3,
+    }
+    music.play(melodies[melody])
 
 
 def send_state():
@@ -219,6 +377,54 @@ def handle_night_light():
             deactivate_light()
             display.show(Image.NO)
             sleep(1000)
+        if pin_logo.is_touched():
+            break
+    return
+
+
+def play_sound():
+    display.show(Image.YES)
+    sleep(500)
+    display.clear()
+    while True:
+        if button_a.was_pressed():
+            print("Enter musique mode")
+            display.show("M")
+            sleep(1000)
+            while True:
+                sleep(100)
+                if pin0.is_touched():
+                    display.show("1")
+                    play_music(melody="melody_1")
+                    display.clear()
+                    sleep(500)
+                if pin1.is_touched():
+                    display.show("2")
+                    play_music(melody="melody_2")
+                    display.clear()
+                    sleep(500)
+                if pin2.is_touched():
+                    display.show("3")
+                    play_music(melody="melody_3")
+                    display.clear()
+                    sleep(500)
+                if button_a.was_pressed():
+                    display.show("<")
+                    sleep(500)
+                    display.clear()
+                    break
+                sleep(100)
+        if button_b.was_pressed():
+            display.show("B")
+            while True:
+                sleep(100)
+                play_noise()
+                if button_a.was_pressed():
+                    display.show("<")
+                    sleep(500)
+                    display.clear()
+                    break
+                sleep(100)
         if pin_logo.is_touched():
             break
     return
@@ -296,8 +502,8 @@ def listen():
             activate_light()
         if message == "deactivate_light":
             deactivate_light()
-        if message == "play_music":
-            play_music()
+        if message_type == "2":
+            play_music(message)
         if message == "play_noise":
             play_noise()
         if message == "send_state":
