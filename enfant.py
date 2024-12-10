@@ -1,10 +1,17 @@
 import random
-
-
-import icons
 import music
 import radio
 from microbit import *
+
+
+icons_flamme = Image("00000:" "00800:" "08880:" "88888:" "08880")
+icons_flocons = Image("80808:" "08880:" "88088:" "08880:" "80808")
+icons_milk = Image("00800:" "08080:" "08080:" "08080:" "08880:")
+icons_light = Image("00800:" "08880:" "88888:" "08880:" "00800:")
+icons_temperature = Image("00800:" "08888:" "00800:" "00800:" "00088:")
+icons_sound = Image("08888:" "08008:" "08008:" "88088:" "88088:")
+icons_musiquemode = Image("00800:" "00800:" "00800:" "08800:" "08800:")
+icons_state = Image("88888:" "88888:" "88888:" "88888:" "88888:")
 
 
 milk_quantity = "0"
@@ -418,7 +425,6 @@ def play_sound():
     display.clear()
     while True:
         if button_a.was_pressed():
-            print("Enter musique mode")
             display.show("M")
             sleep(1000)
             while True:
@@ -461,10 +467,9 @@ def play_sound():
 
 
 def menu():
-    print("Enter Menu Mode")
     display.show("M")
     sleep(1000)
-    images = [icons.milk, icons.light, icons.temperature, icons.sound, icons.state]
+    images = [icons_milk, icons_light, icons_temperature, icons_sound, icons_state]
     value = ""
     current_index = 0
 
@@ -493,18 +498,16 @@ def menu():
 
 
 def select_option(value):
-    if value == icons.milk:
-        print("milk selected")
+    if value == icons_milk:
         milk_quantity = get_milk_quantity()
-        print(milk_quantity)
         display.show(milk_quantity)
         sleep(1000)
-    elif value == icons.light:
+    elif value == icons_light:
         handle_night_light()
-    elif value == icons.temperature:
+    elif value == icons_temperature:
         room_temperature = get_temperature()
         display.scroll(room_temperature)
-    elif value == icons.sound:
+    elif value == icons_sound:
         play_sound()
     return
 
@@ -512,17 +515,16 @@ def select_option(value):
 def alert():
     room_temperature = int(get_temperature())
     baby_state = get_state()
-    if room_temperature < 29 or room_temperature >= 30:
-        return True
+    if room_temperature < 25 or room_temperature >= 30:
+        return True, "TEMPERATURE"
 
     if baby_state == "very agitated":
-        return True
+        return True, "STATE"
 
-    return False
+    return False, ""
 
 
 def listen():
-    print("Enter Listen Mode")
     display.show("E")
     while True:
         sleep(100)
@@ -530,16 +532,15 @@ def listen():
             sleep(1000)
             return menu_mode
 
-        if alert():
-            print("ALERT")
-            send_packet(key=hashing("1"), message_type="9", message="ALERT")
+        is_alert, alert_code = alert()
+        if is_alert:
+            send_packet(key=hashing("1"), message_type="9", message=alert_code)
 
         packet = receive_packet(radio.receive(), hashing("1"))
         if len(packet) < 3:
             sleep(1000)
             continue
         message_type, message_length, message = packet
-        print(message)
         if message == "send_temperature":
             send_temperature()
         if message == "activate_light":
